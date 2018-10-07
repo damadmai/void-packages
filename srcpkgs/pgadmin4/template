@@ -1,0 +1,38 @@
+# Template file for 'pgadmin4'
+pkgname=pgadmin4
+version=3.4
+revision=10
+only_for_archs="i686 x86_64"
+build_wrksrc=runtime
+build_style=qmake
+configure_args="CONFIG+=release"
+makedepends="qt-devel python-devel python-setuptools python-pip python-virtualenv git python-wheel python-Sphinx"
+depends="qt5-webengine python postgresql-libs hicolor-icon-theme"
+short_desc="Comprehensive design and management interface for PostgreSQL"
+maintainer="Daniel A. Maierhofer <git@damadmai.at>"
+license="0BSD"
+homepage="https://www.pgadmin.org"
+#distfiles="https://ftp.postgresql.org/pub/pgadmin/pgadmin4/v$version/source/$pkgname-$version.tar.gz"
+#checksum="84323667a3a4e60233f6b5bd4a562db9b050ed2432abd3007db79461165ab404"
+
+do_fetch() {
+	git clone --branch=REL-3_4 --single-branch --depth 1 https://github.com/postgres/$pkgname $pkgname-$version
+}
+
+#do_build() {
+#}
+
+do_install() {
+	vmkdir /usr/lib/pgadmin4/runtime
+	vbin pgAdmin4 /usr/lib/pgadmin4/runtime
+	cd ..
+	virtualenv venv
+	venv/bin/pip install -r requirements.txt
+#	 PATH="$wrksrc/venv/bin:$PATH" make docs
+	vmkdir /usr/lib/pgadmin4/
+	vcopy venv usr/lib/pgadmin4/
+	vcopy web usr/lib/pgadmin4/
+	vcopy docs usr/lib/pgadmin4/
+	vlicense LICENSE
+}
+
